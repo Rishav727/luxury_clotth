@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metro Cloth Enterprise</title>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Poppins:wght@300;400;500&display=swap"
+    rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: Poppins;
+      background: #faf8f5;
+      color: #333;
+      overflow-x: hidden
+    }
+
+    /* OFFER BAR */
+    .offer {
+      background: #4b2e1e;
+      color: white;
+      text-align: center;
+      padding: 6px;
+      font-size: 13px;
+      overflow: hidden
+    }
+
+    .offer span {
+      display: inline-block;
+      animation: slide 10s linear infinite
+    }
+
+    @keyframes slide {
+      0% {
+        transform: translateX(100%)
+      }
+
+      100% {
+        transform: translateX(-100%)
+      }
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05)
+    }
+
+    .logo {
+      font-family: "Playfair Display";
+      font-size: 22px;
+      color: #4b2e1e
+    }
+
+    /* SEARCH */
+    .search {
+      flex: 1;
+      max-width: 400px
+    }
+
+    .search input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #ddd;
+      border-radius: 20px
+    }
+
+    /* HAMBURGER */
+    .hamburger {
+      width: 28px;
+      cursor: pointer
+    }
+
+    .hamburger span {
+      display: block;
+      height: 3px;
+      background: #4b2e1e;
+      margin: 6px 0;
+      border-radius: 2px;
+      transition: .3s
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px)
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px)
+    }
+
+    /* SIDE MENU */
+    .side-menu {
+      position: fixed;
+      left: -260px;
+      top: 0;
+      height: 100%;
+      width: 250px;
+      background: white;
+      padding: 30px;
+      transition: .3s;
+      z-index: 999;
+      box-shadow: 3px 0 10px rgba(0, 0, 0, 0.15)
+    }
+
+    .side-menu.open {
+      left: 0
+    }
+
+    .side-menu a {
+      display: block;
+      margin: 15px 0;
+      color: #4b2e1e;
+      text-decoration: none;
+      font-weight: 500
+    }
+
+    .side-menu .close {
+      cursor: pointer;
+      font-size: 22px
+    }
+
+    /* HERO */
+    .hero {
+      height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background:
+        linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .9)),
+        url('https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1600');
+      background-size: cover;
+      background-position: center;
+      padding: 20px;
+    }
+
+    .hero h1 {
+      font-family: "Playfair Display";
+      font-size: 38px;
+      color: #4b2e1e
+    }
+
+    .hero p {
+      margin-top: 10px;
+      color: #555
+    }
+
+    /* CATEGORY BUTTONS */
+    .categories {
+      text-align: center;
+      padding: 25px
+    }
+
+    .categories button {
+      margin: 6px;
+      padding: 10px 20px;
+      border-radius: 25px;
+      border: 1px solid #4b2e1e;
+      background: white;
+      color: #4b2e1e;
+      cursor: pointer;
+      transition: .3s
+    }
+
+    .categories button.active,
+    .categories button:hover {
+      background: #4b2e1e;
+      color: white
+    }
+
+    /* PRODUCTS */
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 25px;
+      padding: 30px
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: .4s
+    }
+
+    .card.hide {
+      opacity: 0;
+      transform: scale(.95);
+      pointer-events: none
+    }
+
+    .card img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover
+    }
+
+    .card h3 {
+      padding: 10px
+    }
+
+    .price {
+      padding: 0 10px;
+      color: #4b2e1e;
+      font-weight: 500
+    }
+
+    .card button {
+      margin: 10px;
+      background: #4b2e1e;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      width: 90%;
+      cursor: pointer
+    }
+
+    /* CART ICON */
+    .cart-icon {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #4b2e1e;
+      color: white;
+      padding: 12px 15px;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 1000
+    }
+
+    .cart-count {
+      background: #fff;
+      color: #4b2e1e;
+      border-radius: 50%;
+      padding: 2px 7px;
+      margin-left: 6px;
+      font-size: 12px
+    }
+
+    /* CART PANEL */
+    .cart {
+      position: fixed;
+      right: -400px;
+      top: 0;
+      height: 100%;
+      width: 340px;
+      background: white;
+      transition: .3s;
+      z-index: 2000;
+      box-shadow: -3px 0 10px rgba(0, 0, 0, .2);
+      padding: 20px;
+      overflow: auto
+    }
+
+    .cart.open {
+      right: 0
+    }
+
+    .cart .close {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      font-size: 22px;
+      cursor: pointer
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0
+    }
+
+    .side-menu a:hover {
+      padding-left: 10px;
+      color: #000;
+      transition: .3s;
+    }
+
+    @media(max-width:600px) {
+
+      header {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .logo {
+        width: 100%;
+        text-align: center;
+      }
+
+      .search {
+        width: 100%;
+        order: 3;
+      }
+
+      .search input {
+        width: 100%;
+        font-size: 15px;
+        padding: 12px;
+      }
+
+      .hamburger {
+        order: 1;
+      }
+
+    }
+
+    /* OVERLAY BEHIND MENU */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: .3s;
+      z-index: 998;
+    }
+
+    /* Show overlay when menu open */
+    #overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Menu must be above everything */
+    .side-menu {
+      z-index: 9999;
+    }
+
+    /* Header lower than menu */
+    header {
+      z-index: 100;
+    }
+
+    .checkout-box {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffffff, #f6f1ea);
+      z-index: 9999;
+      display: none;
+      padding: 40px 20px;
+      overflow: auto;
+      font-family: Poppins;
+    }
+
+    .step {
+      display: none;
+      max-width: 420px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      animation: fade .4s ease;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(15px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .step h2 {
+      margin-bottom: 15px;
+      color: #4b2e1e;
+      font-family: "Playfair Display";
+    }
+
+    .step input {
+      width: 100%;
+      padding: 13px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+    }
+
+    .step button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #4b2e1e;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: .3s;
+    }
+
+    .step button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .loader {
+      margin: 15px auto;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #eee;
+      border-top: 4px solid #4b2e1e;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .success-check {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 3px solid #c9a47c;
+      margin: 0 auto 18px;
+      position: relative;
+      box-shadow: 0 0 0 rgba(201, 164, 124, 0.5);
+      animation: pulse 2s infinite;
+    }
+
+    .success-check:after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 32px;
+      width: 20px;
+      height: 10px;
+      border-left: 3px solid #c9a47c;
+      border-bottom: 3px solid #c9a47c;
+      transform: rotate(-45deg);
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(234, 230, 225, 0.6)
+      }
+
+      70% {
+        box-shadow: 0 0 0 14px rgba(201, 164, 124, 0)
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(201, 164, 124, 0)
+      }
+    }
+
+    .success-msg {
+      opacity: 0;
+      animation: fadeIn 1s forwards .6s;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1
+      }
+    }
+
+
+    .success-msg {
+      margin: 10px 0 18px;
+      color: #444;
+    }
+
+    #confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4b2e1e, #7a5230);
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: .4px;
+      cursor: pointer;
+      transition: .35s;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Hover lift effect */
+    .checkout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+    }
+
+    /* Click effect */
+    .checkout-btn:active {
+      transform: scale(.98);
+    }
+
+    /* Shine animation */
+    .checkout-btn:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .4), transparent);
+      transition: .6s;
+    }
+
+    .checkout-btn:hover:before {
+      left: 120%;
+    }
+
+    .footer {
+      background: #4c3434;
+      color: #ddd;
+      padding: 80px 8% 30px;
+      margin-top: 80px;
+    }
+
+    .footer-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 50px;
+    }
+
+    .footer-col h2,
+    .footer-col h3 {
+      color: #fff;
+      margin-bottom: 15px;
+    }
+
+    .footer-tag {
+      line-height: 1.6;
+      opacity: 0.8;
+    }
+
+    .footer-col a {
+      display: block;
+      color: #aaa;
+      text-decoration: none;
+      margin: 6px 0;
+      transition: 0.3s;
+    }
+
+    .footer-col a:hover {
+      color: #fff;
+      transform: translateX(4px);
+    }
+
+    .footer-subscribe {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .footer-subscribe input {
+      padding: 10px;
+      border: none;
+      outline: none;
+      flex: 1;
+      border-radius: 4px;
+    }
+
+    .footer-subscribe button {
+      padding: 10px 16px;
+      border: none;
+      background: #fff;
+      color: #000;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .footer-subscribe button:hover {
+      background: #d4af37;
+      color: #4e4b4b;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 50px;
+      padding-top: 25px;
+      border-top: 1px solid #222;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+
+
+
+
+    /* FOOTER */
+    footer {
+      background: #4b2e1e;
+      color: white;
+      padding: 30px;
+      text-align: center;
+      margin-top: 40px
+    }
+
+    /* MOBILE */
+    @media(max-width:600px) {
+      .hero {
+        height: 45vh
+      }
+
+      .products {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      header {
+        flex-wrap: wrap
+      }
+
+      .search {
+        width: 100%
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="overlay" onclick="toggleMenu()"></div>
+
+
+  <div class="offer"><span>🔥 Flat 20% Off • Buy 2 Get 1 Free • Free Shipping Above ₹1999 • New Winter Drop</span></div>
+
+  <header>
+    <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    <div class="logo">Metro Cloth Enterprise</div>
+    <div class="search"><input type="text" placeholder="Search products..." onkeyup="search(this.value)"></div>
+  </header>
+
+  <div id="sideMenu" class="side-menu">
+    <div class="close" onclick="toggleMenu()">✕</div>
+
+    <a href="#" onclick="menuFilter('all')">All Products</a>
+    <a href="#" onclick="menuFilter('men')">Men</a>
+    <a href="#" onclick="menuFilter('women')">Women</a>
+    <a href="#" onclick="menuFilter('kids')">Kids</a>
+    <a href="#" onclick="scrollHero()">Home Banner</a>
+    <a href="#" onclick="toggleCart()">View Cart</a>
+
+  </div>
+
+
+  <div class="cart-icon" onclick="toggleCart()">Cart <span class="cart-count" id="count">0</span></div>
+
+  <section class="hero">
+    <div>
+      <h1>Luxury In Every Thread</h1>
+      <p>Timeless elegance crafted for modern style.</p>
+    </div>
+  </section>
+
+  <section class="categories">
+    <button class="active" onclick="filter('all',this)">All</button>
+    <button onclick="filter('men',this)">Men</button>
+    <button onclick="filter('women',this)">Women</button>
+    <button onclick="filter('kids',this)">Kids</button>
+  </section>
+
+  <section class="products" id="products"></section>
+
+  <div id="cart" class="cart">
+    <div class="close" onclick="toggleCart()">✕</div>
+    <h2>Your Cart</h2>
+    <div id="items"></div>
+    <button class="checkout-btn" onclick="startCheckout()">
+      Proceed to Secure Checkout →
+    </button>
+
+
+  </div>
+
+  <div id="checkoutBox" class="checkout-box">
+
+    <div class="step" id="step1">
+      <h2>Step 1: Personal Details</h2>
+
+      <input id="name" placeholder="Full Name">
+      <input id="phone" placeholder="Phone Number">
+      <input id="address" placeholder="Address">
+
+      <button onclick="randomDetails()">Fill Random</button>
+      <button onclick="nextStep(2)">Continue</button>
+    </div>
+
+
+    <div class="step" id="step2">
+      <h2>Secure Payment</h2>
+      <p>Total Amount: ₹<span id="totalPay"></span></p>
+
+      <div id="processing" style="display:none;text-align:center;margin-top:20px;">
+        <p>Processing your payment…</p>
+        <div class="loader"></div>
+      </div>
+
+      <button onclick="startPayment()">Pay Securely</button>
+    </div>
+
+
+
+    <div class="step" id="step3">
+
+      <div class="success-check"></div>
+
+      <h2>Order Confirmed</h2>
+
+      <p class="success-msg">
+        Thank you for choosing Metro Cloth Enterprise.
+        Your premium selection is now being prepared with care.
+      </p>
+
+      <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+      <p><strong>Estimated Delivery:</strong> <span id="delivery"></span></p>
+
+      <button onclick="downloadReceipt()">Download Receipt</button>
+      <button onclick="closeCheckout()">Continue Shopping</button>
+
+      <canvas id="confetti"></canvas>
+
+    </div>
+
+    <div id="success-section" style="display:none; padding:40px; max-width:700px; margin:auto;">
+
+      <h2 style="text-align:center;">🎉 Payment Successful</h2>
+      <p style="text-align:center;">Thank you for shopping with <b>Metro Cloth Enterprise</b></p>
+
+      <div id="receipt-box" style="border:1px solid #ddd; padding:20px; margin-top:20px; background:#fff;">
+
+        <h3>Order Receipt</h3>
+        <p><b>Order ID:</b> <span id="order-id"></span></p>
+        <p><b>Date:</b> <span id="order-date"></span></p>
+
+        <h4>Items:</h4>
+        <ul id="receipt-items"></ul>
+
+        <h3>Total Paid: ₹<span id="receipt-total"></span></h3>
+
+      </div>
+
+      <div style="text-align:center; margin-top:25px;">
+        <button onclick="downloadInvoice()">Download Invoice</button>
+        <button onclick="window.location.reload()">Continue Shopping</button>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+
+
+  <footer class="footer">
+    <div class="footer-container">
+
+      <div class="footer-col">
+        <h2 class="footer-brand">LUXE THREADS</h2>
+        <p class="footer-tag">
+          Premium fashion crafted for those who lead, not follow.
+          Designed with elegance, built for confidence.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h3>Shop</h3>
+        <a href="#">Men</a>
+        <a href="#">Women</a>
+        <a href="#">New Arrivals</a>
+        <a href="#">Best Sellers</a>
+      </div>
+
+      <div class="footer-col">
+        <h3>Help</h3>
+        <a href="#">Contact Us</a>
+        <a href="#">Shipping Info</a>
+        <a href="#">Returns</a>
+        <a href="#">FAQ</a>
+      </div>
+
+      <div class="footer-col">
+        <h3>Stay Updated</h3>
+        <p>Subscribe for offers & new collections</p>
+        <div class="footer-subscribe">
+          <input type="email" placeholder="Enter your email">
+          <button>Subscribe</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Luxe Threads. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <script>
+    const data = [
+      { name: "Men Linen Shirt", price: 1499, img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800", cat: "men" },
+      { name: "Men Brown Blazer", price: 2999, img: "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?q=80&w=800", cat: "men" },
+      { name: "Women Silk Dress", price: 2599, img: "https://images.unsplash.com/photo-1520975922284-9c9c58b4e4c0?q=80&w=800", cat: "women" },
+      { name: "Women Coat", price: 3299, img: "https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800", cat: "women" },
+      { name: "Kids Party Set", price: 1199, img: "https://images.unsplash.com/photo-1520975916090-3105956dac38?q=80&w=800", cat: "kids" },
+      { name: "Kids Hoodie", price: 999, img: "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=800", cat: "kids" }
+    ];
+
+    const products = document.getElementById("products");
+    const items = document.getElementById("items");
+    let cart = [];
+
+    function show(list) {
+      products.innerHTML = "";
+      list.forEach(p => {
+        products.innerHTML += `
+<div class="card" data-cat="${p.cat}">
+<img src="${p.img}">
+<h3>${p.name}</h3>
+<div class="price">₹${p.price}</div>
+<button onclick='add(${JSON.stringify(p)})'>Add to Cart</button>
+</div>`;
+      });
+    }
+    show(data);
+
+    function add(p) { cart.push(p); render() }
+    function render() {
+      items.innerHTML = "";
+      cart.forEach((c, i) => items.innerHTML += `<div class="cart-item">${c.name} ₹${c.price}<span onclick="remove(${i})">✕</span></div>`);
+      count.innerText = cart.length;
+    }
+    function remove(i) { cart.splice(i, 1); render() }
+    function toggleCart() { cartEl = document.getElementById("cart"); cartEl.classList.toggle("open") }
+    function toggleMenu() { document.querySelector(".hamburger").classList.toggle("active"); sideMenu.classList.toggle("open") }
+    function filter(cat, btn) {
+      document.querySelectorAll(".categories button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.querySelectorAll(".card").forEach(card => {
+        card.classList.toggle("hide", !(cat === "all" || card.dataset.cat === cat));
+      });
+    }
+    function search(q) {
+      q = q.toLowerCase();
+      show(data.filter(p => p.name.toLowerCase().includes(q)));
+    }
+
+    function menuFilter(category) {
+      function toggleMenu() {
+        document.querySelector(".hamburger").classList.toggle("active");
+        document.getElementById("sideMenu").classList.toggle("open");
+        document.getElementById("overlay").classList.toggle("show");
+      }
+
+
+      // highlight correct category button also
+      document.querySelectorAll(".categories button").forEach(btn => {
+        btn.classList.remove("active");
+        if (btn.innerText.toLowerCase() === category || (category === "all" && btn.innerText === "All")) {
+          btn.classList.add("active");
+        }
+      });
+
+      // filter products
+      document.querySelectorAll(".card").forEach(card => {
+        card.classList.toggle("hide", !(category === "all" || card.dataset.cat === category));
+      });
+
+      // scroll to product section
+      document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function scrollHero() {
+      toggleMenu();
+      document.querySelector(".hero").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function startCheckout() {
+      document.getElementById("checkoutBox").style.display = "block";
+      showStep(1);
+
+      // calculate total
+      let total = cart.reduce((a, b) => a + b.price, 0);
+      document.getElementById("totalPay").innerText = total;
+    }
+
+    function showStep(n) {
+      document.querySelectorAll(".step").forEach(s => s.style.display = "none");
+      document.getElementById("step" + n).style.display = "block";
+    }
+
+    function nextStep(n) { showStep(n) }
+
+    function randomDetails() {
+
+      const names = [
+        "Aman Verma", "Rohit Sen", "Ananya Das", "Sneha Kapoor",
+        "Arjun Mehta", "Neha Roy", "Kabir Khan", "Ishita Bose"
+      ];
+
+      const cities = [
+        "Kolkata, West Bengal",
+        "Delhi, India",
+        "Mumbai, Maharashtra",
+        "Bangalore, Karnataka",
+        "Hyderabad, Telangana"
+      ];
+
+      document.getElementById("name").value =
+        names[Math.floor(Math.random() * names.length)];
+
+      document.getElementById("phone").value =
+        "9" + Math.floor(100000000 + Math.random() * 900000000);
+
+      document.getElementById("address").value =
+        cities[Math.floor(Math.random() * cities.length)];
+    }
+
+
+    function fakePayment() {
+      setTimeout(() => showStep(3), 1500);
+    }
+
+    function closeCheckout() {
+
+      // hide success screen
+      document.getElementById("success-box").style.display = "none";
+
+      // hide checkout box if still open
+      const box = document.getElementById("checkoutBox");
+      if (box) box.style.display = "none";
+
+      // clear cart
+      cart = [];
+      render();
+
+      // scroll back to products smoothly
+      document.getElementById("products").scrollIntoView({
+        behavior: "smooth"
+      });
+
+    }
+
+
+
+
+    function generateOrder() {
+
+      // Order ID
+      const id = "MC" + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById("orderId").innerText = id;
+
+      // Delivery estimate (4-7 days)
+      const days = Math.floor(Math.random() * 3) + 4;
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+
+      document.getElementById("delivery").innerText =
+        d.toDateString();
+
+    }
+
+    function startConfetti() {
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let pieces = [];
+      for (let i = 0; i < 120; i++) {
+        pieces.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - 200,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * 120
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#c9a47c";
+        pieces.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        update();
+      }
+
+      function update() {
+        pieces.forEach(p => {
+          p.y += 2;
+          if (p.y > canvas.height) p.y = -10;
+        });
+      }
+
+      setInterval(draw, 30);
+    }
+    function downloadReceipt() {
+
+      const total = cart.reduce((a, b) => a + b.price, 0);
+
+      const text = `
+Metro Cloth Enterprise Receipt
+-------------------------------
+Order ID: ${document.getElementById("orderId").innerText}
+
+Items:
+${cart.map(i => i.name + " - ₹" + i.price).join("\n")}
+
+Total Paid: ₹${total}
+
+Thank you for shopping with us.
+`;
+
+      const blob = new Blob([text], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "receipt.txt";
+      a.click();
+    }
+
+    async function startPayment() {
+
+      // calculate real cart total
+      const total = cart.reduce((a, b) => a + b.price, 0);
+
+      if (total === 0) {
+        alert("Cart is empty");
+        return;
+      }
+
+      // 🔹 ask backend to create order
+      const res = await fetch("http://localhost:5000/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: total * 100   // ✅ convert to paise
+        })
+
+      });
+
+      const order = await res.json();
+
+      // 🔹 open Razorpay popup
+      const options = {
+        key: "rzp_test_SHizeiyDe57AM0",   // your test key
+        amount: order.amount,
+        currency: "INR",
+        name: "Metro Cloth Enterprise",
+        description: "Secure Payment",
+        order_id: order.id,
+
+        handler: async function (response) {
+
+          console.log("PAYMENT RESPONSE:", response);
+
+          // 🔹 send real Razorpay data to backend
+          const verify = await fetch("http://localhost:5000/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          });
+
+          const result = await verify.json();
+
+          if (result.success) {
+
+            document.getElementById("success-box").style.display = "block";
+
+            document.getElementById("payid").innerText =
+              response.razorpay_payment_id;
+
+            document.getElementById("paydate").innerText =
+              new Date().toLocaleString();
+
+            generateOrder();
+
+          } else {
+            alert("Payment verification failed");
+          }
+        }
+
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+
+    function downloadInvoice() {
+
+      const itemsHTML = cart.map(i =>
+        `<tr>
+       <td>${i.name}</td>
+       <td>₹${i.price}</td>
+     </tr>`
+      ).join("");
+
+      const total = cart.reduce((a, b) => a + b.price, 0);
+
+      const html = `
+  <html>
+  <head>
+    <title>Invoice</title>
+    <style>
+      body{font-family:Arial;padding:40px;color:#222}
+      h2{margin-bottom:5px}
+      table{width:100%;border-collapse:collapse;margin-top:20px}
+      th,td{border-bottom:1px solid #ddd;padding:10px;text-align:left}
+      th{background:#f5f5f5}
+      .total{font-size:18px;margin-top:20px;font-weight:bold}
+    </style>
+  </head>
+  <body>
+
+    <h2>Metro Cloth Enterprise</h2>
+    <p>Order ID: ${document.getElementById("orderId").innerText}</p>
+    <p>Date: ${new Date().toLocaleDateString()}</p>
+
+    <table>
+      <tr><th>Product</th><th>Price</th></tr>
+      ${itemsHTML}
+    </table>
+
+    <p class="total">Total Paid: ₹${total}</p>
+
+    <p>Thank you for shopping with us.</p>
+
+  </body>
+  </html>
+  `;
+
+      const win = window.open("", "", "width=800,height=700");
+      win.document.write(html);
+      win.document.close();
+      win.print();
+    }
+
+
+  </script>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <button onclick="startPayment()">Pay Securely</button>
+
+
+  <!-- ✅ PAYMENT SUCCESS + INVOICE BOX -->
+  <div id="success-box" style="
+display:none;
+position:fixed;
+top:0; left:0;
+width:100%;
+height:100%;
+background:white;
+z-index:9999;
+padding:40px;
+overflow:auto;
+font-family:Arial;
+">
+
+    <h2 style="color:green;">✅ Payment Successful</h2>
+    <p>Thank you for shopping with Metro Cloth Enterprise.</p>
+
+    <div id="receipt-box" style="
+  border:1px solid #ddd;
+  padding:20px;
+  margin-top:20px;
+  max-width:500px;
+  background:#fafafa;
+  ">
+
+      <h3>Order Receipt</h3>
+
+      <p><b>Payment ID:</b> <span id="payid"></span></p>
+      <p><b>Date:</b> <span id="paydate"></span></p>
+      <p><b>Order ID:</b> <span id="orderId"></span></p>
+      <p><b>Estimated Delivery:</b> <span id="delivery"></span></p>
+
+    </div>
+
+    <br>
+
+    <button onclick="downloadInvoice()" style="
+  padding:12px 20px;
+  background:#4CAF50;
+  color:white;
+  border:none;
+  cursor:pointer;
+  ">
+      Download Invoice
+    </button>
+
+    <button onclick="closeCheckout()" style="
+  padding:12px 20px;
+  background:#333;
+  color:white;
+  border:none;
+  cursor:pointer;
+  margin-left:10px;
+  ">
+      Continue Shopping
+    </button>
+
+  </div>
+
+
+
+</body>
+
+</html>
