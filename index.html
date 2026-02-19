@@ -1071,9 +1071,10 @@ Thank you for shopping with us.
       a.click();
     }
 
-    async function startPayment() {
+    let lastOrderCart = []; // store cart items for invoice after payment
 
-  // calculate real cart total
+async function startPayment() {
+
   const total = cart.reduce((a, b) => a + b.price, 0);
 
   if (total === 0) {
@@ -1081,79 +1082,79 @@ Thank you for shopping with us.
     return;
   }
 
-  // create order on backend
-  const res = await fetch("https://luxury-clotth-1.onrender.com/create-order", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount: total * 100 }) // amount in paise
-  });
+  try {
+    // 🔹 Use your Render backend HTTPS URL
+    const res = await fetch("https://your-backend-render-link.onrender.com/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: total * 100 }) // amount in paise
+    });
 
-  const order = await res.json();
+    const order = await res.json();
 
-  // Razorpay options
-  const options = {
-    key: "rzp_test_SHizeiyDe57AM0",
-    amount: order.amount,
-    currency: "INR",
-    name: "Metro Cloth Enterprise",
-    description: "Secure Payment",
-    order_id: order.id,
+    const options = {
+      key: "rzp_test_SHizeiyDe57AM0", // your Razorpay key
+      amount: order.amount,
+      currency: "INR",
+      name: "Metro Cloth Enterprise",
+      description: "Secure Payment",
+      order_id: order.id,
 
-    handler: async function (response) {
-      console.log("PAYMENT RESPONSE:", response);
+      handler: async function (response) {
+        try {
+          const verify = await fetch("https://your-backend-render-link.onrender.com/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          });
 
-      // verify payment on backend
-      const verify = await fetch("https://luxury-clotth-1.onrender.com/verify-payment", { 
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_signature: response.razorpay_signature
-        })
-      });
+          const result = await verify.json();
 
-      const result = await verify.json();
+          if (result.success) {
+            // ✅ Show success screen
+            document.getElementById("success-box").style.display = "block";
+            document.getElementById("payid").innerText = response.razorpay_payment_id;
+            document.getElementById("paydate").innerText = new Date().toLocaleString();
+            generateOrder();
 
-      if (result.success) {
-        // ✅ show success box
-        document.getElementById("success-box").style.display = "block";
+            // ✅ Save cart for invoice
+            lastOrderCart = [...cart];
 
-        document.getElementById("payid").innerText =
-          response.razorpay_payment_id;
+            // ✅ Optionally auto-download invoice
+            // downloadInvoice();
 
-        document.getElementById("paydate").innerText =
-          new Date().toLocaleString();
+            // ✅ Clear cart
+            cart = [];
+            render();
 
-        generateOrder();
-
-        // ✅ store cart for invoice before clearing
-        lastOrderCart = [...cart];
-
-        // ✅ optionally auto-download invoice
-        // downloadInvoice();
-
-        // ✅ clear current cart
-        cart = [];
-        render();
-      } else {
-        alert("Payment verification failed");
+          } else {
+            alert("Payment verification failed");
+          }
+        } catch (err) {
+          console.error("Verify payment error:", err);
+          alert("Error verifying payment");
+        }
       }
-    }
-  };
+    };
 
-  const rzp = new Razorpay(options);
-  rzp.open();
+    const rzp = new Razorpay(options);
+    rzp.open();
+
+  } catch (err) {
+    console.error("Create order error:", err);
+    alert("Error creating payment order");
+  }
 }
 
 
-    function downloadInvoice() {
 
+    function downloadInvoice() {
   const itemsHTML = lastOrderCart.map(i =>
-    `<tr>
-       <td>${i.name}</td>
-       <td>₹${i.price}</td>
-     </tr>`
+    `<tr><td>${i.name}</td><td>₹${i.price}</td></tr>`
   ).join("");
 
   const total = lastOrderCart.reduce((a, b) => a + b.price, 0);
@@ -1164,7 +1165,6 @@ Thank you for shopping with us.
     <title>Invoice</title>
     <style>
       body{font-family:Arial;padding:40px;color:#222}
-      h2{margin-bottom:5px}
       table{width:100%;border-collapse:collapse;margin-top:20px}
       th,td{border-bottom:1px solid #ddd;padding:10px;text-align:left}
       th{background:#f5f5f5}
@@ -1172,20 +1172,15 @@ Thank you for shopping with us.
     </style>
   </head>
   <body>
-
     <h2>Metro Cloth Enterprise</h2>
     <p>Order ID: ${document.getElementById("orderId").innerText}</p>
     <p>Date: ${new Date().toLocaleDateString()}</p>
-
     <table>
       <tr><th>Product</th><th>Price</th></tr>
       ${itemsHTML}
     </table>
-
     <p class="total">Total Paid: ₹${total}</p>
-
     <p>Thank you for shopping with us.</p>
-
   </body>
   </html>
   `;
