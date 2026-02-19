@@ -1083,7 +1083,7 @@ async function startPayment() {
 
   try {
     // 🔹 Use your Render backend HTTPS URL
-    const res = await fetch("https://metrocloth.onrender.com//create-order", {
+    const res = await fetch("https://localhost:5000//create-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: total * 100 }) // amount in paise
@@ -1101,7 +1101,7 @@ async function startPayment() {
 
       handler: async function (response) {
         try {
-          const verify = await fetch("https://metrocloth.onrender.com//verify-payment", {
+          const verify = await fetch("https://localhost:5000//verify-payment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
