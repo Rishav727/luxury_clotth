@@ -846,6 +846,8 @@
 
 
   <script>
+    let lastOrderCart = []; // store cart items for invoice after payment
+
     const data = [
       { name: "Men Linen Shirt", price: 1499, img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800", cat: "men" },
       { name: "Men Brown Blazer", price: 2999, img: "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?q=80&w=800", cat: "men" },
@@ -1071,87 +1073,92 @@ Thank you for shopping with us.
 
     async function startPayment() {
 
-      // calculate real cart total
-      const total = cart.reduce((a, b) => a + b.price, 0);
+  // calculate real cart total
+  const total = cart.reduce((a, b) => a + b.price, 0);
 
-      if (total === 0) {
-        alert("Cart is empty");
-        return;
-      }
+  if (total === 0) {
+    alert("Cart is empty");
+    return;
+  }
 
-      // 🔹 ask backend to create order
-      const res = await fetch("http://localhost:5000/create-order", {
+  // create order on backend
+  const res = await fetch("http://localhost:5000/create-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount: total * 100 }) // amount in paise
+  });
+
+  const order = await res.json();
+
+  // Razorpay options
+  const options = {
+    key: "rzp_test_SHizeiyDe57AM0",
+    amount: order.amount,
+    currency: "INR",
+    name: "Metro Cloth Enterprise",
+    description: "Secure Payment",
+    order_id: order.id,
+
+    handler: async function (response) {
+      console.log("PAYMENT RESPONSE:", response);
+
+      // verify payment on backend
+      const verify = await fetch("http://localhost:5000/verify-payment", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: total * 100   // ✅ convert to paise
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature
         })
-
       });
 
-      const order = await res.json();
+      const result = await verify.json();
 
-      // 🔹 open Razorpay popup
-      const options = {
-        key: "rzp_test_SHizeiyDe57AM0",   // your test key
-        amount: order.amount,
-        currency: "INR",
-        name: "Metro Cloth Enterprise",
-        description: "Secure Payment",
-        order_id: order.id,
+      if (result.success) {
+        // ✅ show success box
+        document.getElementById("success-box").style.display = "block";
 
-        handler: async function (response) {
+        document.getElementById("payid").innerText =
+          response.razorpay_payment_id;
 
-          console.log("PAYMENT RESPONSE:", response);
+        document.getElementById("paydate").innerText =
+          new Date().toLocaleString();
 
-          // 🔹 send real Razorpay data to backend
-          const verify = await fetch("https://localhost:5000/verify-payment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature
-            })
-          });
+        generateOrder();
 
-          const result = await verify.json();
+        // ✅ store cart for invoice before clearing
+        lastOrderCart = [...cart];
 
-          if (result.success) {
+        // ✅ optionally auto-download invoice
+        // downloadInvoice();
 
-            document.getElementById("success-box").style.display = "block";
-
-            document.getElementById("payid").innerText =
-              response.razorpay_payment_id;
-
-            document.getElementById("paydate").innerText =
-              new Date().toLocaleString();
-
-            generateOrder();
-
-          } else {
-            alert("Payment verification failed");
-          }
-        }
-
-      };
-
-      const rzp = new Razorpay(options);
-      rzp.open();
+        // ✅ clear current cart
+        cart = [];
+        render();
+      } else {
+        alert("Payment verification failed");
+      }
     }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+
 
     function downloadInvoice() {
 
-      const itemsHTML = cart.map(i =>
-        `<tr>
+  const itemsHTML = lastOrderCart.map(i =>
+    `<tr>
        <td>${i.name}</td>
        <td>₹${i.price}</td>
      </tr>`
-      ).join("");
+  ).join("");
 
-      const total = cart.reduce((a, b) => a + b.price, 0);
+  const total = lastOrderCart.reduce((a, b) => a + b.price, 0);
 
-      const html = `
+  const html = `
   <html>
   <head>
     <title>Invoice</title>
@@ -1183,11 +1190,12 @@ Thank you for shopping with us.
   </html>
   `;
 
-      const win = window.open("", "", "width=800,height=700");
-      win.document.write(html);
-      win.document.close();
-      win.print();
-    }
+  const win = window.open("", "", "width=800,height=700");
+  win.document.write(html);
+  win.document.close();
+  win.print();
+}
+
 
 
   </script>
