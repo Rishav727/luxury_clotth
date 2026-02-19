@@ -1082,7 +1082,7 @@ Thank you for shopping with us.
   }
 
   // create order on backend
-  const res = await fetch("http://localhost:5000/create-order", {
+  const res = await fetch("https://luxury-clotth-1.onrender.com/create-order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ amount: total * 100 }) // amount in paise
@@ -1103,7 +1103,7 @@ Thank you for shopping with us.
       console.log("PAYMENT RESPONSE:", response);
 
       // verify payment on backend
-      const verify = await fetch("http://localhost:5000/verify-payment", { 
+      const verify = await fetch("https://luxury-clotth-1.onrender.com/verify-payment", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
